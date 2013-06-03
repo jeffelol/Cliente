@@ -11,43 +11,61 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class Cliente {
-    public static void main(String[] args){
+    private String mensa;
+    private String minhasMensagens;
+    PrintStream print;
+    BufferedReader read;
+
+    public Cliente() {
+
         try {
             Socket socket = new Socket("localhost", 4444);
-            
+
             String resp;
             OutputStream saida;
             saida = socket.getOutputStream();
-            PrintStream print = new PrintStream(saida);
+            print = new PrintStream(saida);
 
             InputStream resposta;
             resposta = socket.getInputStream();
-            BufferedReader read = new BufferedReader(new InputStreamReader(resposta));
-            
-            print.println("MSG");
-            
-            Mensagem me = new Mensagem("Juca", "Testando 123");
-            
-            Gson gson = new Gson();
-            String msg = gson.toJson(me);
-            print.println(msg);
-            
-            resp = read.readLine();
-            
-            System.out.println("" + resp);
-            
-            print.close();
-            saida.close();
-            
+            read = new BufferedReader(new InputStreamReader(resposta));
+
         } catch (UnknownHostException ex) {
             Logger.getLogger(Cliente.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
             Logger.getLogger(Cliente.class.getName()).log(Level.SEVERE, null, ex);
         }   
+    }
+
+    public String getMinhasMensagens() {
+        print.println("LER");
+        try {
+            minhasMensagens = read.readLine();
+        } catch (IOException ex) {
+            Logger.getLogger(Cliente.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        if (minhasMensagens.isEmpty()){
+            minhasMensagens = "Nenhuma mensagem";
+        }
+        return minhasMensagens;
+    }
+    
+    public String getMensa() {
+        return mensa;
+    }
+
+    public void setMensa(String mensa) {
+            print.println("MSG");
+
+            Mensagem me = new Mensagem("Juca", mensa);
+
+            Gson gson = new Gson();
+            String msg = gson.toJson(me);
+            print.println(msg);
     }
 }
